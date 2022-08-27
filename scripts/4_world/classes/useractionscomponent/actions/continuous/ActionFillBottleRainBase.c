@@ -59,13 +59,13 @@ class ActionFillBottleRainBase : ActionContinuousBase
 			return false;
 
 		// Client-side action condition check - are we outside, is it raining and are we looking up?
-		return IsRaining() && GetCameraPitch() >= ZenRainWaterConstants.CAMERA_PITCH_TO_CATCH_RAIN && !MiscGameplayFunctions.IsUnderRoof(player);
+		return ZenClientFunctions.IsRaining() && ZenClientFunctions.GetCameraPitch() >= ZenRainWaterConstants.CAMERA_PITCH_TO_CATCH_RAIN && !MiscGameplayFunctions.IsUnderRoof(player);
 	}
 
 	// Can player continue to catch rain? Same conditions as start conditions except player no longer needs to look up to sky.
 	override bool ActionConditionContinue(ActionData action_data)
 	{
-		return action_data.m_MainItem.GetQuantity() < action_data.m_MainItem.GetQuantityMax() && IsRaining() && !MiscGameplayFunctions.IsUnderRoof(action_data.m_Player) && action_data.m_Player.m_MovementState.m_iStanceIdx != DayZPlayerConstants.STANCEIDX_PRONE;
+		return action_data.m_MainItem.GetQuantity() < action_data.m_MainItem.GetQuantityMax() && ZenClientFunctions.IsRaining() && !MiscGameplayFunctions.IsUnderRoof(action_data.m_Player) && action_data.m_Player.m_MovementState.m_iStanceIdx != DayZPlayerConstants.STANCEIDX_PRONE;
 	}
 
 	// Used to sync relevant data between server/client
@@ -95,31 +95,5 @@ class ActionFillBottleRainBase : ActionContinuousBase
 		}
 
 		return true;
-	}
-
-	// Is it currently raining heavily and overcast?
-	static bool IsRaining()
-	{
-		return GetGame().GetWeather().GetRain().GetActual() >= ZenRainWaterConstants.REQUIRED_RAIN && GetGame().GetWeather().GetOvercast().GetActual() >= ZenRainWaterConstants.REQUIRED_OVERCAST;
-	}
-
-	// Client-side only. Gets camera angle.
-	static int GetCameraPitch()
-	{
-		if (!GetGame())
-			return 0;
-
-		PlayerBase player = PlayerBase.Cast(GetGame().GetPlayer());
-		float pitch = 0;
-
-		if (player)
-		{
-			DayZPlayerCamera camera = player.GetCurrentCamera();
-
-			if (camera)
-				pitch = camera.GetCurrentPitch();
-		}
-
-		return pitch;
 	}
 };

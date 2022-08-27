@@ -14,6 +14,9 @@ class ActionFillRainGround : ActionInteractBase
 	// Check action conditions for starting the rain catching process
 	override bool ActionCondition(PlayerBase player, ActionTarget target, ItemBase item)
 	{
+		if (!ZenClientFunctions.IsRaining())
+			return false;
+
 		EntityAI target_entity = EntityAI.Cast(target.GetObject());
 
 		// If there is no bottle or it's ruined, stop.
@@ -38,7 +41,7 @@ class ActionFillRainGround : ActionInteractBase
 			return false;
 
 		// Check the final conditions.
-		return player.IsAlive() && !bottle.IsCatchingRain() && ActionFillBottleRainBase.IsRaining() && !MiscGameplayFunctions.IsUnderRoof(target_entity);
+		return player.IsAlive() && !bottle.IsCatchingRain() && !MiscGameplayFunctions.IsUnderRoof(target_entity);
 	}
 
 	// Server-side - start filling water bottle if it's raining
@@ -77,7 +80,7 @@ class ActionFillRainGround : ActionInteractBase
 	void FillRainWater()
 	{
 		// If it's no longer raining, stop the rain timer and inform all bottles
-		if (!ActionFillBottleRainBase.IsRaining())
+		if (!ZenClientFunctions.IsRaining())
 		{
 			StopRainTimer(true);
 			return;
